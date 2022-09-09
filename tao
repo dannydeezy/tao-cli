@@ -7,7 +7,7 @@ if (!process.env.LNM_SECRET) {
 
 const tao = new TaoWallet({
   lnmSecret: process.env.LNM_SECRET, 
-  network: process.env.NETWORK || 'testnet'
+  network: process.env.NETWORK || 'mainnet'
 })
 
 prog
