@@ -17,13 +17,13 @@ prog
     await tao.login()
   })
   .command('deposit', 'Deposit funds')
-  .argument('[type]', 'Type of deposit', /^lightning|on-chain|lnurl$/, 'on-chain')
-  .option('--amount <amount>', 'Amount to deposit', prog.INT, 0)
+  .argument('[type]', 'Type of deposit', /^bolt11|on-chain|lnurl$/, 'on-chain')
+  .option('--amount_sats <amount>', 'Amount to deposit', prog.INT, 0)
   .action(async function(args, options, logger) {
     if (!tao.isLoggedIn()) {
       await tao.login()
     }
-    const addr = await tao.fetchDepositAddress({ type: args.type, amount: options.amount })
+    const addr = await tao.fetchDepositAddress({ type: args.type, amountSats: options.amount_sats })
     console.log(`\n${addr}\n`)
   })
   .command('balance', 'Get account balance')
