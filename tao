@@ -23,7 +23,7 @@ prog
     if (!tao.isLoggedIn()) {
       await tao.login()
     }
-    const addr = await tao.fetchDepositAddress({ type: args.type, amountSats: options.amount_sats })
+    const addr = await tao.fetchDepositAddress({ type: args.type, amountSats: options.amountSats })
     console.log(`\n${addr}\n`)
   })
   .command('balance', 'Get account balance')
