@@ -1,0 +1,58 @@
+#!/usr/bin/env node
+const prog = require('caporal')
+const TaoWallet = require('../tao-wallet')
+if (!process.env.LNM_SECRET) {
+  throw new Error('Please set LNM_SECRET environment variable to a secure random string')
+}
+
+const tao = new TaoWallet({
+  lnmSecret: process.env.LNM_SECRET, 
+  network: process.env.NETWORK || 'testnet'
+})
+
+prog
+  .version('1.0.0')
+  .command('init', 'Initialize the wallet')
+  .action(async function(args, options, logger) {
+    await tao.login()
+  })
+  .command('deposit', 'Deposit funds')
+  .argument('[type]', 'Type of deposit', /^lightning|on-chain|lnurl$/, 'on-chain')
+  .option('--amount <amount>', 'Amount to deposit', prog.INT, 0)
+  .action(async function(args, options, logger) {
+    if (!tao.isLoggedIn()) {
+      await tao.login()
+    }
+    const addr = await tao.fetchDepositAddress({ type: args.type, amount: options.amount })
+    console.log(`\n${addr}\n`)
+  })
+  .command('balance', 'Get account balance')
+  .action(async function (args, options, logger) {
+    if (!tao.isLoggedIn()) {
+      await tao.login()
+    }
+    const balances = await tao.fetchBalances()
+    console.log(balances)
+  })
+  .command('swap', 'Swap between BTC and USD')
+  .option('--from <from>', 'Currency to swap from', /^btc|usd$/, 'btc')
+  .option('--to <to>', 'Currency to swap to', /^btc|usd$/, 'usd')
+  .option('--amount_usd <amount_usd>', 'Amount to swap (in usd)', prog.INT, 0)
+  .action(async function(args, options, logger) {
+    if (!tao.isLoggedIn()) {
+      await tao.login()
+    }
+    await tao.swap({ from: options.from, to: options.to, amountUsd: options.amountUsd })
+  })
+  .command('send', 'Send BTC')
+  .option('--type <type>', 'Type of address to send to', /^bolt11|on-chain$/, 'on-chain')
+  .option('--amount_sats <amount_sats>', 'Amount to send (in sats)', prog.INT, 0)
+  .option('--address <address>', 'Address to send to (bolt11 or on-chain)', prog.STRING)
+  .action(async function (args, options, logger) {
+    if (!tao.isLoggedIn()) {
+      await tao.login()
+    }
+    await tao.send({ type: options.type, amountSats: options.amountSats, address: options.address })
+  })
+ 
+prog.parse(process.argv)
