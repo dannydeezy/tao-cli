@@ -11,6 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "caporal": "^1.4.0",
-    "tao-wallet": "^2.0.2"
+    "tao-wallet": "^2.5.0"
   }
 }
